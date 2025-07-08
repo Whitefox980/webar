@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>VolMax WebAR Prototype</title>
+    
+    <!-- AR.js and A-Frame -->
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+    
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 999;
+            font-size: 12px;
+        }
+        
+        #instructions {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            z-index: 999;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Info Panel -->
+    <div id="info">
+        <div><strong>VolMax WebAR</strong></div>
+        <div>Status: <span id="status">Loading...</span></div>
+    </div>
+    
+    <!-- Instructions -->
+    <div id="instructions">
+        <strong>Instructions:</strong><br>
+        Point your camera at the HIRO marker to see 3D content appear!<br>
+        <a href="https://ar-js-org.github.io/AR.js/data/images/hiro.png" target="_blank" style="color: #4CAF50;">Download HIRO Marker</a>
+    </div>
+
+    <!-- AR Scene -->
+    <a-scene 
+        embedded 
+        arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+        vr-mode-ui="enabled: false"
+        gesture-detector
+        id="scene">
+        
+        <!-- Marker: HIRO -->
+        <a-marker 
+            preset="hiro" 
+            id="marker-hiro"
+            registerevents>
+            
+            <!-- 3D Content -->
+            <a-entity id="content">
+                <!-- Rotating Box -->
+                <a-box 
+                    position="0 0.5 0" 
+                    rotation="0 45 0"
+                    color="#4CAF50"
+                    animation="property: rotation; to: 0 405 0; loop: true; dur: 10000">
+                </a-box>
+                
+                <!-- Text -->
+                <a-text 
+                    value="VolMax AR!" 
+                    position="0 1.5 0" 
+                    align="center"
+                    color="#FFD700"
+                    scale="2 2 2">
+                </a-text>
+                
+                <!-- Cylinder -->
+                <a-cylinder 
+                    position="-1 0.75 0" 
+                    radius="0.3" 
+                    height="1.5" 
+                    color="#FF5722"
+                    animation="property: position; to: -1 1.5 0; dir: alternate; dur: 2000; loop: true">
+                </a-cylinder>
+                
+                <!-- Sphere -->
+                <a-sphere 
+                    position="1 1.25 0" 
+                    radius="0.25" 
+                    color="#2196F3"
+                    animation="property: scale; to: 1.5 1.5 1.5; dir: alternate; dur: 1000; loop: true">
+                </a-sphere>
+            </a-entity>
+        </a-marker>
+
+        <!-- Camera -->
+        <a-entity camera look-controls-enabled="false"></a-entity>
+    </a-scene>
+
+    <script>
+        // Status updates
+        const statusElement = document.getElementById('status');
+        
+        // Scene loaded
+        document.querySelector('a-scene').addEventListener('loaded', function () {
+            statusElement.textContent = 'Ready';
+            console.log('WebAR scene loaded successfully');
+        });
+        
+        // Marker found
+        document.querySelector('#marker-hiro').addEventListener('markerFound', function() {
+            statusElement.textContent = 'Marker Found!';
+            console.log('HIRO marker detected');
+        });
+        
+        // Marker lost
+        document.querySelector('#marker-hiro').addEventListener('markerLost', function() {
+            statusElement.textContent = 'Searching...';
+            console.log('HIRO marker lost');
+        });
+        
+        // Hide instructions after 10 seconds
+        setTimeout(() => {
+            const instructions = document.getElementById('instructions');
+            instructions.style.display = 'none';
+        }, 10000);
+    </script>
+</body>
+</html>
